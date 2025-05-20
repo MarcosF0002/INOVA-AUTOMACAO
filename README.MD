@@ -55,7 +55,7 @@ A equipe do projeto mantém uma planilha no Google Sheets com diversas abas (sta
 
 ## 👨‍💻 Autor
 
-Desenvolvido por **[Marcos Felipe Lopes Rodrigues]**, aluno de Ciências Econômicas da UFPR e integrante do projeto de extensão *Inovação e Desenvolvimento Territorial*.
+Desenvolvido por **Marcos Felipe Lopes Rodrigues**, aluno de Ciências Econômicas da UFPR e integrante do projeto de extensão *Inovação e Desenvolvimento Territorial*.
 
 ---
 
