@@ -43,7 +43,6 @@ A equipe do projeto mantém uma planilha no Google Sheets com diversas abas (sta
 ├── interface.py # Interface gráfica com Tkinter para escolher abas e executar atualização
 ├── links_startups.xlsx # Planilha local que relaciona nome da aba ao link da página
 ├── .env # Credenciais de acesso ao WordPress (não versionado)
-
 ---
 
 ## 🔐 Segurança
