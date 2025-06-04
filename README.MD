@@ -38,7 +38,7 @@ A equipe do projeto mantém uma planilha no Google Sheets com diversas abas (sta
 
 ## 📂 Estrutura do Projeto
 
-├── criarHTML.py # Geração do HTML com base nos dados da planilha
+├── criarHTML.py # Geração do HTML com base nos dados da planilha 
 ├── atualizador_WP.py # Conexão com a REST API do WordPress e substituição do conteúdo
 ├── interface.py # Interface gráfica com Tkinter para escolher abas e executar atualização
 ├── links_startups.xlsx # Planilha local que relaciona nome da aba ao link da página

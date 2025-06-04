@@ -44,16 +44,18 @@ def on_submit():
     erros = []
     for aba in selecionadas:
         try:
+            
             html = processa_aba_gera_html(aba)
             if html is None:
                 erros.append(f"{aba}: Erro ao gerar HTML.")
                 continue
 
             link = abas_links[aba]
-            sucesso = atualizar_pagina_wp(link, html)
+            resposta = atualizar_pagina_wp(link, html)
 
-            if not sucesso:
+            if resposta is not True:
                 erros.append(f"{aba}: Falha ao atualizar a página.")
+
         except Exception as e:
             erros.append(f"{aba}: {str(e)}")
 

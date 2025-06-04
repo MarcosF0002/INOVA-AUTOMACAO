@@ -1,6 +1,5 @@
-# Ignorar arquivo de variáveis de ambiente
-.env
-
 # Ignorar pastas de dados
 tabelas/
 tabelas-atualizadas/
+credenciais/
+__pycache__

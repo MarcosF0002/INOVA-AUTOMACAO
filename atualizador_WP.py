@@ -31,11 +31,11 @@ def atualizar_pagina_wp(pagina_url, nova_tabela_html):
 
     page_url = f"https://inova.ufpr.br/wp-json/wp/v2/pages/{page_id}?context=edit"
 
-    load_dotenv()
+    load_dotenv(dotenv_path='credenciais/.env')
     WP_USER = os.getenv("WP_USER")
     WP_APP_PASSWORD = os.getenv("WP_APP_PASSWORD")
 
-    # Obter conteúdo com contexto de edição (necessário para acessar 'raw')
+    # Obter conteúdo com contexto de edição
     resp_get = requests.get(
         page_url,
         auth=HTTPBasicAuth(WP_USER, WP_APP_PASSWORD),
@@ -53,10 +53,7 @@ def atualizar_pagina_wp(pagina_url, nova_tabela_html):
         print("Conteúdo 'raw' não encontrado. Verifique permissões do usuário.")
         return False
 
-    # COMEÇA ATUALIZAR DAQUI
-    # Substitui todo o bloco do comentário até o fechamento da tabela
     pattern = r'<!-- COMECA ATUALIZAR DAQUI -->.*?</table>'
-
     novo_conteudo, count = re.subn(
         pattern,
         f'{nova_tabela_html}',
@@ -68,7 +65,6 @@ def atualizar_pagina_wp(pagina_url, nova_tabela_html):
         print("Aviso: não foi encontrado o marcador '<!-- COMECA ATUALIZAR DAQUI -->' com tabela associada.")
         return False
 
-    # Atualizar a página via API REST
     data = {"content": novo_conteudo}
     resp_update = requests.post(
         f"https://inova.ufpr.br/wp-json/wp/v2/pages/{page_id}",
