@@ -27,7 +27,7 @@ jobs:
       # 4️⃣ Rodar o script Python
       - name: Run script
         env:
-          GSHEETS_CREDENTIALS_JSON: ${{ secrets.GSHEETS_CREDENTIALS_JSON }}
+          GOOGLE_JSON: ${{ secrets.GOOGLE_JSON }}
           WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
           WP_USER: ${{ secrets.WP_USER }}      # caso use usuário também
           WP_URL: ${{ secrets.WP_URL }}        # URL do WordPress
