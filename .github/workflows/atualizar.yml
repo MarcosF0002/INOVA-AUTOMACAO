@@ -2,6 +2,8 @@ name: Atualizar INOVA
 
 on:
   workflow_dispatch:  # permite rodar manualmente
+  schedule:
+    - cron: '*/2 * * * *'  # Executa todos os dias às 00:30 UTC
 
 jobs:
   atualizar_wp:
@@ -33,4 +35,3 @@ jobs:
           WP_USER: ${{ secrets.WP_USER }}      # caso use usuário também
           WP_URL: ${{ secrets.WP_URL }}        # URL do WordPress
         run: python main.py
-
