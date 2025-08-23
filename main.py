@@ -12,7 +12,7 @@ from criarHTML_3col import gerar_html_3COL
 # =========================================
 # Conexão com Google Sheets
 # =========================================
-google_json = os.environ.get("GSHEETS_CREDENTIALS_JSON")
+google_json = os.environ.get("GOOGLE_JSON")
 if not google_json:
     raise ValueError("O secret GSHEETS_CREDENTIALS_JSON não está definido!")
 
