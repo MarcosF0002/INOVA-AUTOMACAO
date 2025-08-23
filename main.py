@@ -1,18 +1,47 @@
-import pandas as pd
+import os
+import json
+import time
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 from criarHTML import processa_aba_gera_html
 from atualizador_WP import atualizar_pagina_wp
+from pitchs import gerar_html_pitchs_via_api
 from criaHTMLPais import gerar_html_pais
 from criarHTML_3col import gerar_html_3COL
 
-# Lê apenas a coluna A a partir da linha 2 da aba 'CHECAR ABAS'
-df_checagem = pd.read_excel("links_startups.xlsx", sheet_name="CHECAR ABAS", usecols="A", skiprows=1)
-abas_selecionadas = df_checagem.iloc[:, 0].dropna().tolist()  # remove valores nulos
+# =========================================
+# Conexão com Google Sheets
+# =========================================
+google_json = os.environ.get("GSHEETS_CREDENTIALS_JSON")
+if not google_json:
+    raise ValueError("O secret GSHEETS_CREDENTIALS_JSON não está definido!")
 
+creds_dict = json.loads(google_json)
+scope = ["https://spreadsheets.google.com/feeds",
+         "https://www.googleapis.com/auth/drive"]
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+client = gspread.authorize(creds)
+
+# Planilha e aba
+GSHEET_KEY = os.environ.get("GSHEETS_KEY")  # secret com ID da planilha
+sheet = client.open_by_key(GSHEET_KEY).worksheet("CHECAR ABAS")
+
+# Pega valores da coluna A a partir da linha 2
+abas_selecionadas = sheet.col_values(1)[1:]  # ignora a primeira linha (cabeçalho)
+abas_selecionadas = [aba for aba in abas_selecionadas if aba.strip()]
 print("Abas que serão atualizadas:", abas_selecionadas)
 
-# Lê os links de todas as abas (como antes)
-links_df = pd.read_excel("links_startups.xlsx")
-abas_links = dict(zip(links_df['ABA'], links_df['LINK']))
+# =========================================
+# Dicionário com links de todas as abas
+# =========================================
+# Você pode ter outra aba no Google ou outro arquivo com links
+# Aqui assumimos que você tem todos os links já mapeados em um dicionário
+# exemplo:
+abas_links = {
+    "TESTE": "https://inova.ufpr.br/teste",
+    "ASSOCIAÇÕES EMPRESARIAIS": "https://inova.ufpr.br/associacoes",
+    # ... adicione todas as abas que precisar
+}
 
 abas_pais = [
     "ASSOCIAÇÕES EMPRESARIAIS",
@@ -24,9 +53,11 @@ abas_pais = [
     "TESTE"
 ]
 
+# =========================================
+# Atualização em lotes de 5 abas
+# =========================================
+tamanho_lote = 5
 erros = []
-
-tamanho_lote = 5  # número de abas por lote
 
 for i in range(0, len(abas_selecionadas), tamanho_lote):
     lote = abas_selecionadas[i:i+tamanho_lote]
@@ -63,7 +94,7 @@ for i in range(0, len(abas_selecionadas), tamanho_lote):
 
     if i + tamanho_lote < len(abas_selecionadas):
         print("\n⏱️ Pausa de 1 minuto antes do próximo lote...")
-        time.sleep(60)  # pausa de 60 segundos
+        time.sleep(60)
 
 if not erros:
     print("\nTodas as abas selecionadas foram atualizadas com sucesso.")
