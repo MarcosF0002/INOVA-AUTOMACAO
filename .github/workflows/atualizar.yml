@@ -30,5 +30,5 @@ jobs:
           WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
           WP_USER: ${{ secrets.WP_USER }}      # caso use usuário também
           WP_URL: ${{ secrets.WP_URL }}        # URL do WordPress
-        run: python atualizar_inova.py
+        run: python atualizador_WP.py
 
