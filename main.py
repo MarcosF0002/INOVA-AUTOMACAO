@@ -1,7 +1,6 @@
 import pandas as pd
 from criarHTML import processa_aba_gera_html
 from atualizador_WP import atualizar_pagina_wp
-from pitchs import gerar_html_pitchs_via_api
 from criaHTMLPais import gerar_html_pais
 from criarHTML_3col import gerar_html_3COL
 
