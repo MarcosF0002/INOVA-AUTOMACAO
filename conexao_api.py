@@ -4,7 +4,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 # Lê o JSON do secret
-google_json = os.environ.get("GSHEETS_CREDENTIALS_JSON")
+google_json = os.environ.get("GOOGLE_JSON")
 if not google_json:
     raise ValueError("O secret GSHEETS_CREDENTIALS_JSON não está definido!")
 
