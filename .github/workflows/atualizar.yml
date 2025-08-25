@@ -3,7 +3,7 @@ name: Atualizar INOVA
 on:
   workflow_dispatch:  # permite rodar manualmente
   schedule:
-    - cron: '15 16 * * *'  # Executa todos os dias às 00:30 UTC
+    - cron: '* 16 18 * *'  # Executa todos os dias às 00:30 UTC
 
 jobs:
   atualizar_wp:
