@@ -9,6 +9,12 @@ import gspread.exceptions # Importa exceções específicas do gspread
 # Certifique-se de que conexao_api.py configura um cliente gspread.Client para Sheets API
 from conexao_api import client 
 
+def safe_str(val, default=''):
+    if pd.isna(val) or val is None:
+        return default
+    return str(val).strip()
+
+
 # Função auxiliar para converter número de coluna para letra (ex: 1 -> A, 26 -> Z, 27 -> AA)
 def numero_para_coluna(n):
     resultado = ''
@@ -62,7 +68,7 @@ def processa_aba_gera_html(aba,
         status_index = cabecalho.index("STATUS")
         
         # Define as colunas desejadas para o registro no histórico
-        colunas_desejadas = ["NOME", "CATEGORIA", "LINK", "UF", "CIDADE", "CONTEÚDO BALÃO"]
+        colunas_desejadas = ["NOME", "CATEGORIA", "LINK", "CIDADE", "UF", "CONTEÚDO BALÃO"]
         # Encontra os índices das colunas desejadas que realmente existem no cabeçalho
         indices_colunas_desejadas = []
         colunas_desejadas_presentes = []
@@ -109,6 +115,10 @@ def processa_aba_gera_html(aba,
                 novas_linhas_entrada.append(["ENTRADA", aba, datetime.now().strftime("%d/%m/%Y %H:%M:%S")] + dados_base)
                 # Atualiza o status na linha original para ser gravada de volta na aba de origem
                 linha_copia = list(linha) # Cria uma cópia da linha para modificar
+                linha_copia[status_index] = "ADICIONADO AO SITE"
+                novas_linhas_origem.append(linha_copia)
+            elif status == "EDITAR":
+                linha_copia = list(linha)
                 linha_copia[status_index] = "ADICIONADO AO SITE"
                 novas_linhas_origem.append(linha_copia)
             else:
@@ -218,16 +228,17 @@ def processa_aba_gera_html(aba,
 </thead>
 <tbody>
 """
-        # Itera sobre as linhas do DataFrame para construir as linhas da tabela HTML
         for _, row in data.iterrows():
-            link = row['LINK'] if pd.notnull(row['LINK']) else '#'
-            if not str(link).startswith(('http://', 'https://')):
-                link = 'http://' + str(link)
-            nome = row['NOME'] if pd.notnull(row['NOME']) else ''
-            uf = row['UF'] if pd.notnull(row['UF']) else ''
-            valor_quinta_coluna = row[quinta_coluna_nome] if pd.notnull(row[quinta_coluna_nome]) else ''
-            categoria = row['CATEGORIA'] if pd.notnull(row['CATEGORIA']) else ''
-            conteudo_balao = row['CONTEÚDO BALÃO'] if pd.notnull(row['CONTEÚDO BALÃO']) else ''
+            link = safe_str(row.get('LINK'), default='#')
+            if not link.startswith(('http://', 'https://')):
+                link = 'http://' + link
+
+            nome = safe_str(row.get('NOME'), default='')
+            uf = safe_str(row.get('UF'), default='')
+            valor_quinta_coluna = safe_str(row.get(quinta_coluna_nome), default='')
+            categoria = safe_str(row.get('CATEGORIA'), default='')
+            conteudo_balao = safe_str(row.get('CONTEÚDO BALÃO'), default='')
+
             html += f"""
 <tr class="organizationRow" data-uf="{uf}" data-{data_attr}="{valor_quinta_coluna}" data-categoria="{categoria}">
 <td scope="row">
@@ -242,6 +253,77 @@ def processa_aba_gera_html(aba,
 """
         html += """
 </tbody>
+<script crossorigin="anonymous" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+<script crossorigin="anonymous" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function populateSelects() {
+        var ufSet = new Set();
+        var cidadeSet = new Set();
+        var categoriaSet = new Set();
+        $("#organization_table tbody tr").each(function() {
+            ufSet.add($(this).data("uf"));
+            cidadeSet.add($(this).data("cidade"));
+            categoriaSet.add($(this).data("categoria"));
+        });
+        
+        // Ordena as opções de cada conjunto
+        var ufArray = Array.from(ufSet).sort();
+        var cidadeArray = Array.from(cidadeSet).sort();
+        var categoriaArray = Array.from(categoriaSet).sort();
+
+        // Adiciona as opções de estado ordenadas, ignorando vazios
+        ufArray.forEach(function(uf) {
+            if (uf) {
+                $("#ufSelect").append(new Option(uf, uf));
+            }
+        });
+        
+        // Adiciona as opções de cidade ordenadas, ignorando vazios
+        cidadeArray.forEach(function(cidade) {
+            if (cidade) {
+                $("#cidadeSelect").append(new Option(cidade, cidade));
+            }
+        });
+        
+        // Adiciona as opções de categoria ordenadas, ignorando vazios
+        categoriaArray.forEach(function(categoria) {
+            if (categoria) {
+                $("#categoriaSelect").append(new Option(categoria, categoria));
+            }
+        });
+    }
+
+    function filterTable() {
+        var ufFilter = $("#ufSelect").val().toLowerCase();
+        var cidadeFilter = $("#cidadeSelect").val().toLowerCase();
+        var categoriaFilter = $("#categoriaSelect").val().toLowerCase();
+        
+        $("#organization_table tbody tr").filter(function() {
+            var ufText = $(this).data("uf").toLowerCase();
+            var cidadeText = $(this).data("cidade").toLowerCase();
+            var categoriaText = $(this).data("categoria").toLowerCase();
+            
+            if ((ufFilter === "" || ufText === ufFilter) &&
+                (cidadeFilter === "" || cidadeText === cidadeFilter) &&
+                (categoriaFilter === "" || categoriaText === categoriaFilter)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        populateSelects();
+        var value = $(this).val().toLowerCase();
+        $("#organization_table tr.organizationRow").filter(function() {
+            var rowText = $(this).text().toLowerCase();
+            var tooltipText = $(this).find("span").attr("title") ? $(this).find("span").attr("title").toLowerCase() : "";
+            $(this).toggle(rowText.indexOf(value) > -1 || tooltipText.indexOf(value) > -1);
+        });
+    });
+</script>
 </table>
 """
         return html
@@ -251,7 +333,7 @@ def processa_aba_gera_html(aba,
     total_organizacoes = len(data)
 
     # ESTA É A LINHA CORRIGIDA PARA O MARCADOR IMPORTANTE!
-    html = f"""
+    html = f"""<!-- COMECA ATUALIZAR DAQUI -->
 <div class="p-2 mr-2" id="count">
 <p><b>Total de organizações:</b> {total_organizacoes}</p>
 </div>
@@ -270,7 +352,7 @@ def processa_aba_gera_html(aba,
 
     # Tenta copiar o código HTML para a área de transferência
     try:
-        pyperclip.copy(html)
+        pyperclip.copy(str(html))
         print("Código HTML copiado para a área de transferência.")
     except Exception as e:
         print(f"Erro ao copiar para área de transferência: {e}")
