@@ -87,48 +87,203 @@ def gerar_html_pitchs(df):
         print("DataFrame vazio, nada para gerar.")
         return None
 
-    html = StringIO()
-    html.write("<!-- COMECA ATUALIZAR DAQUI -->\n")
+    # Filtrar apenas linhas com dados válidos
+    df = df.dropna(subset=['NOME', 'LINK'], how='all')
+    df = df[(df['NOME'].str.strip() != '') & (df['LINK'].str.strip() != '')]
     
+    html = StringIO()
+    
+    # Escrever o cabeçalho da tabela
+    html.write("""
+<body>
+<!-- COMECA ATUALIZAR DAQUI -->
+    <div class="container">
+        <input type="text" id="searchInput" placeholder="Pesquise por vídeo...">
+    </div>
+<div class="p-2 mr-2" id="count">
+<p><b>Total de organizações:</b> """ + str(len(df)) + """</p>
+</div>
+
+<table id="organization_table">
+    <thead>
+        <tr>
+            <th scope="col">
+                <p>Organização</p>
+            </th>
+            <th scope="col">
+                <select id="categoriaSelect" onchange="filterTable()">
+                    <option value="">Categorias</option>
+                </select>
+            </th>
+            <th scope="col">
+                <select id="instituicaoSelect" onchange="filterTable()" style="width: 350px; overflow: hidden; text-overflow: ellipsis;">
+                    <option value="">Instituições</option>
+                </select>
+            </th>
+            <th scope="col">
+                <select id="segmentoSelect" onchange="filterTable()">
+                    <option value="">Segmentos</option>
+                </select>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+""")
+    
+    # Escrever as linhas da tabela seguindo exatamente o padrão
     for _, row in df.iterrows():
         video_id = get_video_id(str(row.get("LINK", "")))
         if not video_id:
             continue
 
+        nome = row.get('NOME', '')
+        categoria = row.get('CATEGORIA', '')
+        instituicao = row.get('INSTITUIÇÃO', '')
+        segmento = row.get('SEGMENTO', '')
+        link = row.get('LINK', '')
+        conteudo_balao = row.get('CONTEÚDO BALÃO', '')
+        embed_link = f"https://www.youtube.com/embed/{video_id}"
+        thumb_link = f"https://img.youtube.com/vi/{video_id}/0.jpg"
+
         html.write(f"""
-      
         <tr class="organizationRow"
-            data-categoria="{row.get('CATEGORIA', '')}"
-            data-instituicao="{row.get('INSTITUIÇÃO', '')}"
-            data-segmento="{row.get('SEGMENTO', '')}">
+            data-categoria="{categoria}"
+            data-instituicao="{instituicao}"
+            data-segmento="{segmento}">
             <td scope="row" style="text-align: center; position: relative; width: 600px;">
                 <div style="color: darkblue; font-weight: bold; margin-bottom: 5px;">
-                    <a href="{row.get('LINK', '')}" target="_blank">{row.get('NOME', '')}</a>
+                    <a href="{link}" target="_blank">{nome}</a>
                 </div>
-                <a href="#" onclick="openFullscreen('https://www.youtube.com/embed/{video_id}')"
+                <a href="#" onclick="openFullscreen('{embed_link}')"
                     style="display: inline-block; position: relative;">
                     <div class="tooltip-container">
-                        <img src="https://img.youtube.com/vi/{video_id}/0.jpg" alt="Miniatura do vídeo"
+                        <img src="{thumb_link}" alt="Miniatura do vídeo"
                             style="width: 180px; cursor: pointer; display: block;">
                         <div class="play-button">▶</div>
-                        <span class="tooltip-inner">{row.get('CONTEÚDO BALÃO', '')}</span>
+                        <span class="tooltip-inner">{conteudo_balao}</span>
                     </div>
                 </a>
             </td>
-            <td style="text-align: center; vertical-align: middle;">{row.get('CATEGORIA', '')}</td>
-            <td style="text-align: center; vertical-align: middle;">{row.get('INSTITUIÇÃO', '')}</td>
-            <td style="text-align: center; vertical-align: middle;">{row.get('SEGMENTO', '')}</td>
+            <td style="text-align: center; vertical-align: middle;">{categoria}</td>
+            <td style="text-align: center; vertical-align: middle;">{instituicao}</td>
+            <td style="text-align: center; vertical-align: middle;">{segmento}</td>
         </tr>
-
-
         """)
 
-    html.write("</tbody></table>\n") # Fecha a tabela
-    
+    # Fechar a tabela e adicionar os elementos restantes
+    html.write("""
+    </tbody>
+</table>
+
+<div class="video-container">
+    <div id="videoModal">
+        <iframe id="fullscreenVideo" frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
+        <button id="closeButton" onclick="closeFullscreen()">Fechar</button>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    function openFullscreen(videoUrl) {
+        document.getElementById("fullscreenVideo").src = videoUrl + "?autoplay=1";
+        document.getElementById("videoModal").style.display = "flex";
+    }
+
+    function closeFullscreen() {
+        document.getElementById("fullscreenVideo").src = "";
+        document.getElementById("videoModal").style.display = "none";
+    }
+
+    function updateOrganizationCount() {
+        var visibleRows = $("#organization_table tbody tr:visible").length;
+        $("#count p").html("<b>Total de organizações:</b> " + visibleRows);
+    }
+
+    function populateSelects() {
+        var categoriaSet = new Set();
+        var instituicaoSet = new Set();
+        var segmentoSet = new Set();
+
+        $("#organization_table tbody tr").each(function() {
+            categoriaSet.add($(this).data("categoria"));
+            instituicaoSet.add($(this).data("instituicao"));
+            segmentoSet.add($(this).data("segmento"));
+        });
+
+        var categoriaArray = Array.from(categoriaSet).sort();
+        var instituicaoArray = Array.from(instituicaoSet).sort();
+        var segmentoArray = Array.from(segmentoSet).sort();
+
+        categoriaArray.forEach(function(categoria) {
+            if (categoria) {
+                $("#categoriaSelect").append(new Option(categoria, categoria));
+            }
+        });
+
+        instituicaoArray.forEach(function(instituicao) {
+            if (instituicao) {
+                $("#instituicaoSelect").append(new Option(instituicao, instituicao));
+            }
+        });
+
+        segmentoArray.forEach(function(segmento) {
+            if (segmento) {
+                $("#segmentoSelect").append(new Option(segmento, segmento));
+            }
+        });
+    }
+
+    function filterTable() {
+        var categoriaFilter = $("#categoriaSelect").val()?.toLowerCase() || "";
+        var instituicaoFilter = $("#instituicaoSelect").val()?.toLowerCase() || "";
+        var segmentoFilter = $("#segmentoSelect").val()?.toLowerCase() || "";
+
+        $("#organization_table tbody tr").each(function() {
+            var categoriaText = ($(this).data("categoria") || "").toLowerCase();
+            var instituicaoText = ($(this).data("instituicao") || "").toLowerCase();
+            var segmentoText = ($(this).data("segmento") || "").toLowerCase();
+
+            if ((categoriaFilter === "" || categoriaText === categoriaFilter) &&
+                (instituicaoFilter === "" || instituicaoText === instituicaoFilter) &&
+                (segmentoFilter === "" || segmentoText === segmentoFilter)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+
+        updateOrganizationCount();
+    }
+
+    $(document).ready(function() {
+        populateSelects();
+        updateOrganizationCount();
+
+        $("#categoriaSelect, #instituicaoSelect, #segmentoSelect").on("change", function() {
+            filterTable();
+        });
+
+        $("#searchInput").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#organization_table tr.organizationRow").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+            updateOrganizationCount();
+        });
+    });
+</script>
+</body>
+</html>
+""")
+
     result_html = html.getvalue()
     pyperclip.copy(result_html)
     print("HTML copiado para a área de transferência.")
     return result_html
+
 
 def gerar_html_pitchs_via_api():
     try:
