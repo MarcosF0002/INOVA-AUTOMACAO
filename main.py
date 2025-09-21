@@ -116,7 +116,7 @@ abas_links = {
     "FINANCIAMENTO A INOVAÇÃO": "https://inova.ufpr.br/financiamento-inovacao/",
     "HUBS E ECOSSISTEMAS": "https://inova.ufpr.br/hubs-e-ecossistemas/",
     "INOVAÇÃO NAS UNIVERSIDADES": "https://inova.ufpr.br/inovacao-nas-universidades/",
-    "INSTITUTOS E GRUPOS DE PESQUISA": "https://inova.ufpr.br/institutos-de-pesquisa/",
+    "INSTITUTOS DE PESQUISA": "https://inova.ufpr.br/institutos-de-pesquisa/",
     "PARQUES CIENTÍFICOS": "https://inova.ufpr.br/parques-tecnologicos/",
     "PERÍODICOS CIENTÍFICOS": "https://inova.ufpr.br/periodicos-cientificos/",
     "POLÍTICAS DE INOVAÇÃO": "https://inova.ufpr.br/politicas-de-inovacao/",
