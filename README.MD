@@ -6,20 +6,24 @@ Este projeto automatiza a atualização de páginas do site [inova.ufpr.br](http
 
 A equipe do projeto mantém uma planilha no Google Sheets com diversas abas (startups, aceleradoras, universidades, etc.). Este sistema:
 
-- Converte automaticamente o conteúdo das abas em HTML interativo
-- Permite selecionar as abas a atualizar por meio de uma interface gráfica
-- Publica o HTML nas páginas corretas do WordPress via REST API
+Converte automaticamente o conteúdo das abas em HTML interativo.
+
+Atualiza as páginas do WordPress todos os dias por meio de uma GitHub Action.
+
+Identifica quais abas precisam de atualização através da coluna STATUS da planilha (ADICIONAR AO SITE, REMOVER, EDITAR).
+
+Publica o HTML nas páginas corretas do WordPress via REST API.
 
 ---
 
 ## 🔧 Funcionalidades
 
-✅ Interface gráfica (Tkinter) para selecionar as abas a atualizar  
-✅ Geração automática de HTML com filtros por estado, cidade/país e categoria  
-✅ Conexão direta com planilha online (Google Sheets)  
-✅ Mapeamento entre aba e URL via Excel local  
-✅ Substituição dinâmica do conteúdo no WordPress com autenticação segura  
-✅ Feedback visual de sucesso ou erro na atualização
+✅ Atualização diária automática via GitHub Actions
+✅ Geração de HTML com filtros por estado, cidade/país e categoria em JavaScript
+✅ Integração direta com Google Sheets (via App Script + API)
+✅ Mapeamento entre aba e URL configurado no arquivo main.py
+✅ Substituição dinâmica do conteúdo no WordPress
+✅ Processamento automatizado conforme o STATUS de cada aba
 
 ---
 
@@ -27,34 +31,34 @@ A equipe do projeto mantém uma planilha no Google Sheets com diversas abas (sta
 
 - **Python 3**
 - `pandas`
-- `tkinter`
+- `GitHub Actions`
+- `GitHub Secrets`
 - `requests`
 - `openpyxl`
-- `python-dotenv`
-- **Google Sheets** (via exportação pública em XLSX)
+- **Google Sheets API + App Script**
 - **WordPress REST API**
 
 ---
 
 ## 📂 Estrutura do Projeto
 
+├── main.py # Script principal que orquestra a atualização
 
 ├── criarHTML.py # Geração do HTML com base nos dados da planilha
 
 ├── atualizador_WP.py # Conexão com a REST API do WordPress e substituição do conteúdo
 
-├── interface.py # Interface gráfica com Tkinter para escolher abas e executar atualização
+├── conexao_api.py # Funções auxiliares para conexão e autenticação
 
-├── links_startups.xlsx # Planilha local que relaciona nome da aba ao link da página
-
-├── .env # Credenciais de acesso ao WordPress (não versionado)
+├── requirements.txt # Dependências do projeto
 
 ---
 
 ## 🔐 Segurança
 
-- As credenciais do WordPress são armazenadas localmente em um arquivo `.env`, que **não deve ser versionado**.
-- A autenticação com o WordPress é feita por meio de senha de aplicativo, uma prática segura e recomendada para uso com a REST API.
+-As credenciais do WordPress e do Google estão armazenadas como GitHub Secrets, não sendo expostas no código.
+
+-A autenticação com o WordPress é feita por senha de aplicativo, prática segura e recomendada para uso com a REST API.
 
 ---
 
