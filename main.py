@@ -123,6 +123,7 @@ abas_links = {
     "PROPRIEDADE INTELECTUAL": "https://inova.ufpr.br/1234-2/",
     "VÍDEOS E PODCASTS": "https://inova.ufpr.br/cursos-e-podcasts-de-empreendedorismo/",
     "PITCHS DE STARTUPS": "https://inova.ufpr.br/pitchs-de-startups-incubadoras-e-aceleradoras/"
+    "MANAGETECHS" : "https://inova.ufpr.br/managetechs/"
 }
 
 abas_pais = [
