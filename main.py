@@ -132,7 +132,6 @@ abas_pais = [
     "HUBS E ECOSSISTEMAS",
     "INSTITUTOS E GRUPOS DE PESQUISA",
     "POLÍTICAS DE INOVAÇÃO",
-    "PROPRIEDADE INTELECTUAL",
     "TESTE"
 ]
 
@@ -162,6 +161,8 @@ for i in range(0, len(abas_selecionadas), tamanho_lote):
                 html = gerar_html_pitchs_via_api()
             elif aba.upper() == "VÍDEOS E PODCASTS":
                 html = gerar_html_3COL(aba)
+            elif aba.upper() == "PROPRIEDADE INTELECTUAL":
+                html = gerar_html_3COL(aba)    
             elif aba.upper() in [a.upper() for a in abas_pais]:
                 html = gerar_html_pais(aba)
             else:
