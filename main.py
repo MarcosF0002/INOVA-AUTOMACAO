@@ -122,7 +122,7 @@ abas_links = {
     "POLÍTICAS DE INOVAÇÃO": "https://inova.ufpr.br/politicas-de-inovacao/",
     "PROPRIEDADE INTELECTUAL": "https://inova.ufpr.br/1234-2/",
     "VÍDEOS E PODCASTS": "https://inova.ufpr.br/cursos-e-podcasts-de-empreendedorismo/",
-    "PITCHS DE STARTUPS": "https://inova.ufpr.br/pitchs-de-startups-incubadoras-e-aceleradoras/"
+    "PITCHS DE STARTUPS": "https://inova.ufpr.br/pitchs-de-startups-incubadoras-e-aceleradoras/",
     "MANAGETECHS" : "https://inova.ufpr.br/managetechs/"
 }
 
