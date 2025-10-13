@@ -19,10 +19,15 @@ Publica o HTML nas páginas corretas do WordPress via REST API.
 ## 🔧 Funcionalidades
 
 ✅ Atualização diária automática via GitHub Actions
+
 ✅ Geração de HTML com filtros por estado, cidade/país e categoria em JavaScript
+
 ✅ Integração direta com Google Sheets (via App Script + API)
+
 ✅ Mapeamento entre aba e URL configurado no arquivo main.py
+
 ✅ Substituição dinâmica do conteúdo no WordPress
+
 ✅ Processamento automatizado conforme o STATUS de cada aba
 
 ---
